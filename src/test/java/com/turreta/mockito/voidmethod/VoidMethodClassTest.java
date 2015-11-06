@@ -102,4 +102,25 @@ public class VoidMethodClassTest {
         Mockito.verify(service, Mockito.only()).processLegalAged(Matchers.any(PersonRecord.class));
 
     }
+	
+	@Test
+    public void testProcess_record_record_not_undefined_status_verify_argument() {
+        Mockito.when(record.getId()).thenReturn("1000");
+        Mockito.when(record.getStatus()).thenReturn("UNDEFINED STATUS");
+
+        ArgumentCaptor<PersonRecord> processLegalAgedArgument = ArgumentCaptor.forClass(PersonRecord.class);
+
+        voidMethodClass.process(record);
+
+        // We check if getStatus was invoked
+        inOrder.verify(record, Mockito.times(1)).getId();
+        inOrder.verify(record, Mockito.times(2)).getStatus();
+
+        Mockito.verify(service, Mockito.only()).processLegalAged(processLegalAgedArgument.capture());
+
+        PersonRecord capturedBean = processLegalAgedArgument.getValue();
+        Assert.assertTrue(record.getId().equals(capturedBean.getId()));
+        Assert.assertTrue(record.getStatus().equals(capturedBean.getStatus()));
+
+    }
 }
